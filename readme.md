@@ -1,7 +1,4 @@
-# Project Name
 
-## 🚀 Overview
-Is project ka short description yaha likho. Ye bataye ki project kya karta hai aur kis purpose ke liye hai.
 
 ## 🛠 Features
 - [x] Feature 1
@@ -10,7 +7,7 @@ Is project ka short description yaha likho. Ye bataye ki project kya karta hai a
 
 ## 📦 Installation
 ```bash
-git clone https://github.com/your-username/project-name.git
-cd project-name
+git clone https://github.com/umeshpatil665/learn_backend.git
+cd backend_first
 npm install
-npm start
+npm run dev
