@@ -4,9 +4,24 @@ import express from "express";
 
 import connectDB from "./db/index.js";
 
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
+import { app } from "./app.js";
 dotenv.config();
 connectDB()
+  .then(() => {
+    app.on("error",(error)=>{
+        console.log("Error",error)
+        throw error
+    })
+
+    app.listen(process.env.PORT,()=>{
+        console.log(`app listing on port ${process.env.PORT}`)
+    })
+  })
+  .catch((err) => {
+    console.log("Mongo db connection error", err);
+    throw err;
+  });
 
 // const app = express()
 
