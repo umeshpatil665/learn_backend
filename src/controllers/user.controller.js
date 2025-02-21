@@ -25,25 +25,37 @@ const registerUser = asyncHandler(async (req, res) => {
   ) {
     throw new apiError(400, "All field is required");
   }
-  console.log("email", email);
+  //   console.log("email", email);
 
-  const exitingUser = User.findOne({ $or: [{ username }, { email }] });
-
-  if (exitingUser) {
+  const existedUser = await User.findOne({
+    $or: [{ username }, { email }],
+  });
+  console.log(existedUser);
+  if (existedUser) {
     throw new apiError(409, "User with email or username already exits! ");
   }
 
-  const avtarLocalPath = req?.files?.avtar[0]?.path;
-  const coverImageLocalImage = req?.files?.coverImage[0]?.path;
+  const avtarLocalPath = await req?.files?.avtar[0]?.path;
+  //   const coverImageLocalImage = await req?.files?.coverImage[0]?.path||"";
+  const coverImageLocalImage =
+    req.files.coverImage &&
+    Array.isArray(req.files.coverImage) &&
+    req.files.coverImage.length > 0
+      ? req.files.coverImage[0].path
+      : "";
 
   if (!avtarLocalPath) {
     throw new apiError(400, "Avtar file is required");
   }
 
-  const avtar = await uploadOnCloudinary(avtarLocalPath);
-  const coverImage = await uploadOnCloudinary(coverImageLocalImage);
-
+  const avtar =
+    uploadOnCloudinary && (await uploadOnCloudinary(avtarLocalPath));
+  const coverImage = coverImageLocalImage
+    ? await uploadOnCloudinary(coverImageLocalImage)
+    : "";
+  // console.log(avtar)
   if (!avtar) {
+    console.log("avater image not working");
     throw new apiError(400, "Avtar file is required");
   }
 
@@ -60,17 +72,17 @@ const registerUser = asyncHandler(async (req, res) => {
 
   //   remove password and refreshtoken
 
-  const createUser = await User.findById(user?._id).select(
+  const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
 
-  if(!createUser){
-    throw new apiError(500,"Something went wrong while user creation")
+  if (!createdUser) {
+    throw new apiError(500, "Something went wrong while creating the user");
   }
 
-  return res.status(201).josn(
-    new apiResponse(200,createUser,"User Creation Succesfully...")
-  )
+  return res
+    .status(201)
+    .json(new apiResponse(200, createdUser, "User registered Successfully"));
 });
 
 export { registerUser };
